@@ -5,6 +5,10 @@
 @section('content')
     <h2>Daftar Buku</h2>
 
+    <p>
+        <a href="{{ route('books.create') }}">+ Tambah Buku Baru</a>
+    </p>
+
     <table border="1" cellpadding="10" cellspacing="0">
         <thead>
             <tr>
@@ -25,7 +29,13 @@
                     <td>{{ $book->year }}</td>
                     <td>{{ $book->stock }}</td>
                     <td>
-                        <a href="/books/{{ $book->id }}">Detail</a>
+                        <a href="{{ route('books.show', $book->id) }}">Detail</a> |
+                        <a href="{{ route('books.edit', $book->id) }}">Edit</a> |
+                        <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Yakin ingin menghapus buku ini?')">Hapus</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach

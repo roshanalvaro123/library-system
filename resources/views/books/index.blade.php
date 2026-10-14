@@ -5,6 +5,13 @@
 @section('content')
     <h2>Daftar Buku</h2>
 
+    {{-- Alert Notifikasi Sukses --}}
+    @if(session('success'))
+        <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <p>
         <a href="{{ route('books.create') }}">+ Tambah Buku Baru</a>
     </p>

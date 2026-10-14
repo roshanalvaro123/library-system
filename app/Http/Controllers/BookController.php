@@ -7,62 +7,80 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    // READ - Menampilkan daftar buku
     public function index()
     {
         $books = Book::all();
         return view('books.index', compact('books'));
     }
 
-    // CREATE - Menampilkan form tambah buku
     public function create()
     {
         return view('books.create');
     }
 
-    // STORE - Menyimpan data buku baru ke database
+    // STORE dengan Validasi (Min 2010, Max 2026)
     public function store(Request $request)
     {
-        Book::create([
-            'title' => $request->title,
-            'author' => $request->author,
-            'year' => $request->year,
-            'stock' => $request->stock,
+        $validated = $request->validate([
+            'title'  => 'required|string|max:255|unique:books,title',
+            'author' => 'required|string|max:255',
+            'year'   => 'required|integer|min:2010|max:2026',
+            'stock'  => 'required|integer|min:0',
+        ], [
+            'title.required'  => 'Judul buku wajib diisi.',
+            'title.unique'    => 'Judul buku sudah terdaftar.',
+            'title.max'       => 'Judul buku maksimal 255 karakter.',
+            'author.required' => 'Nama penulis wajib diisi.',
+            'year.required'   => 'Tahun terbit wajib diisi.',
+            'year.min'        => 'Tahun terbit minimal tahun 2010.',
+            'year.max'        => 'Tahun terbit tidak boleh lebih dari tahun 2026.',
+            'stock.required'  => 'Stok buku wajib diisi.',
+            'stock.min'       => 'Stok buku tidak boleh kurang dari 0.',
         ]);
 
-        return redirect()->route('books.index');
+        Book::create($validated);
+
+        return redirect()->route('books.index')->with('success', 'Data buku berhasil ditambahkan.');
     }
 
-    // SHOW - Menampilkan detail buku
     public function show(Book $book)
     {
         return view('books.show', compact('book'));
     }
 
-    // EDIT - Menampilkan form edit buku
     public function edit(Book $book)
     {
         return view('books.edit', compact('book'));
     }
 
-    // UPDATE - Memperbarui data buku di database
+    // UPDATE dengan Validasi (Min 2010, Max 2026)
     public function update(Request $request, Book $book)
     {
-        $book->update([
-            'title' => $request->title,
-            'author' => $request->author,
-            'year' => $request->year,
-            'stock' => $request->stock,
+        $validated = $request->validate([
+            'title'  => 'required|string|max:255|unique:books,title,' . $book->id,
+            'author' => 'required|string|max:255',
+            'year'   => 'required|integer|min:2010|max:2026',
+            'stock'  => 'required|integer|min:0',
+        ], [
+            'title.required'  => 'Judul buku wajib diisi.',
+            'title.unique'    => 'Judul buku sudah digunakan.',
+            'author.required' => 'Nama penulis wajib diisi.',
+            'year.required'   => 'Tahun terbit wajib diisi.',
+            'year.min'        => 'Tahun terbit minimal tahun 2010.',
+            'year.max'        => 'Tahun terbit tidak boleh lebih dari tahun 2026.',
+            'stock.required'  => 'Stok buku wajib diisi.',
+            'stock.min'       => 'Stok buku tidak boleh kurang dari 0.',
         ]);
 
-        return redirect()->route('books.index');
+        $book->update($validated);
+
+        return redirect()->route('books.index')->with('success', 'Data buku berhasil diperbarui.');
     }
 
-    // DELETE - Menghapus buku
     public function destroy(Book $book)
     {
         $book->delete();
 
-        return redirect()->route('books.index');
+        return redirect()->route('books.index')->with('success', 'Data buku berhasil dihapus.');
     }
 }

@@ -5,7 +5,6 @@
 @section('content')
     <h2>Daftar Buku</h2>
 
-    {{-- Alert Notifikasi Sukses --}}
     @if(session('success'))
         <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
             {{ session('success') }}
@@ -21,6 +20,7 @@
             <tr>
                 <th>ID</th>
                 <th>Judul Buku</th>
+                <th>Kategori</th>
                 <th>Penulis</th>
                 <th>Tahun</th>
                 <th>Stok</th>
@@ -32,6 +32,7 @@
                 <tr>
                     <td>{{ $book->id }}</td>
                     <td>{{ $book->title }}</td>
+                    <td>{{ $book->category?->name ?? 'Belum ada kategori' }}</td>
                     <td>{{ $book->author }}</td>
                     <td>{{ $book->year }}</td>
                     <td>{{ $book->stock }}</td>

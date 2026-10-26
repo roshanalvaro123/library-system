@@ -1,21 +1,39 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Buku - Library System</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <nav>
+            <a href="/dashboard">Dashboard</a> | 
+            <a href="{{ route('books.index') }}">Books</a> | 
+            <a href="#">Categories</a> | 
+            <a href="#">Members</a>
+        </nav>
 
-@section('title', 'Daftar Buku')
+        <!-- Form Tombol Logout -->
+        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            @csrf
+            <button type="submit" onclick="return confirm('Yakin ingin logout?')">Logout</button>
+        </form>
+    </div>
 
-@section('content')
-    <h2>Daftar Buku</h2>
+    <hr>
 
-    @if(session('success'))
-        <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+    <h1>Daftar Buku</h1>
+
+    @if (session('success'))
+        <div style="color: green; margin-bottom: 15px;">
             {{ session('success') }}
         </div>
     @endif
 
-    <p>
-        <a href="{{ route('books.create') }}">+ Tambah Buku Baru</a>
-    </p>
+    <p><a href="{{ route('books.create') }}">+ Tambah Buku Baru</a></p>
 
-    <table border="1" cellpadding="10" cellspacing="0">
+    <table border="1" cellpadding="8" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th>ID</th>
@@ -28,25 +46,30 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($books as $book)
+            @forelse ($books as $book)
                 <tr>
                     <td>{{ $book->id }}</td>
                     <td>{{ $book->title }}</td>
-                    <td>{{ $book->category?->name ?? 'Belum ada kategori' }}</td>
+                    <td>{{ $book->category->name ?? 'Belum ada kategori' }}</td>
                     <td>{{ $book->author }}</td>
                     <td>{{ $book->year }}</td>
                     <td>{{ $book->stock }}</td>
                     <td>
-                        <a href="{{ route('books.show', $book->id) }}">Detail</a> |
-                        <a href="{{ route('books.edit', $book->id) }}">Edit</a> |
+                        <a href="{{ route('books.show', $book->id) }}">Detail</a> | 
+                        <a href="{{ route('books.edit', $book->id) }}">Edit</a> | 
                         <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Yakin ingin menghapus buku ini?')">Hapus</button>
+                            <button type="submit" onclick="return confirm('Yakin hapus data ini?')">Hapus</button>
                         </form>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="7" align="center">Data buku masih kosong.</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
-@endsection
+</body>
+</html>

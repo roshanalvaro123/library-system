@@ -1,20 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\MemberController;
+use App\Http\Controllers\AuthController;
 
-// Redirect / ke /dashboard
+// Redirect halaman utama langsung ke daftar buku
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return redirect()->route('books.index');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index']);
+// Route untuk Guest (Belum Login)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+});
 
-// Menggantikan route manual /books dan /books/{id} dengan Resource Route
-Route::resource('books', BookController::class);
+// Route untuk Logout
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/members', [MemberController::class, 'index']);
+// Route yang Dilindungi (Harus Login)
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect()->route('books.index');
+    })->name('dashboard');
+
+    Route::resource('books', BookController::class);
+});
